@@ -103,14 +103,14 @@ export class AppComponent {
 
   addCalculation(calculation : String){
 
-    this.http.post<any>('http://localhost:8080/saveCalculation', calculation).subscribe(data => {
+    this.http.post<any>('https://egraika-calculator.herokuapp.com/saveCalculation', calculation).subscribe(data => {
         this.calculations = data;
         console.log(data);
     })
   }
 
   init() {
-    this.http.get<any>('http://localhost:8080/getCalculations').subscribe(data => {
+    this.http.get<any>('https://egraika-calculator.herokuapp.com/getCalculations').subscribe(data => {
         this.calculations = data;
         console.log(data);
     })
