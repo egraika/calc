@@ -89,6 +89,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var AppComponent = /** @class */ (function () {
     function AppComponent(http) {
+        var _this = this;
         this.http = http;
         this.calculations = [];
         this.subText = '';
@@ -97,7 +98,16 @@ var AppComponent = /** @class */ (function () {
         this.calculationString = '';
         this.answered = false;
         this.operatorSet = false;
+        this.init();
+        this.id = setInterval(function () {
+            _this.init();
+        }, 5000);
     }
+    AppComponent.prototype.ngOnDestroy = function () {
+        if (this.id) {
+            clearInterval(this.id);
+        }
+    };
     AppComponent.prototype.pressKey = function (key) {
         if (key === '/' || key === 'x' || key === '-' || key === '+') {
             var lastKey = this.mainText[this.mainText.length - 1];
@@ -115,6 +125,7 @@ var AppComponent = /** @class */ (function () {
             return;
         }
         this.mainText += key;
+        this.operatorSet = false;
     };
     AppComponent.prototype.allClear = function () {
         this.mainText = '';
@@ -163,7 +174,14 @@ var AppComponent = /** @class */ (function () {
     };
     AppComponent.prototype.addCalculation = function (calculation) {
         var _this = this;
-        this.http.post('http://localhost:8080/saveCalculation', calculation).subscribe(function (data) {
+        this.http.post('https://egraika-calculator.herokuapp.com/saveCalculation', calculation).subscribe(function (data) {
+            _this.calculations = data;
+            console.log(data);
+        });
+    };
+    AppComponent.prototype.init = function () {
+        var _this = this;
+        this.http.get('https://egraika-calculator.herokuapp.com/getCalculations').subscribe(function (data) {
             _this.calculations = data;
             console.log(data);
         });
