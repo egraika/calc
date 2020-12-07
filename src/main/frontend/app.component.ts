@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Response, Headers } from '@angular/http';
 import { HttpClient } from '@angular/common/http';
+import { interval, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -9,7 +10,20 @@ import { HttpClient } from '@angular/common/http';
 })
 export class AppComponent {
 
-  constructor(private http: HttpClient) { }
+  id;
+
+  constructor(private http: HttpClient) {
+     this.init();
+     this.id = setInterval(() => {
+      this.init();
+    }, 5000);
+  }
+
+  ngOnDestroy() {
+    if (this.id) {
+      clearInterval(this.id);
+    }
+  }
 
   calculations = [];
 
@@ -21,6 +35,7 @@ export class AppComponent {
   calculationString = '';
   answered = false;
   operatorSet = false;
+
 
   pressKey(key: string) {
     if (key === '/' || key === 'x' || key === '-' || key === '+') {
@@ -39,6 +54,7 @@ export class AppComponent {
       return;
     }
     this.mainText += key;
+    this.operatorSet = false;
   }
 
   allClear() {
@@ -87,7 +103,14 @@ export class AppComponent {
 
   addCalculation(calculation : String){
 
-    this.http.post<any>('http://localhost:8080/saveCalculation', calculation).subscribe(data => {
+    this.http.post<any>('https://egraika-calculator.herokuapp.com/saveCalculation', calculation).subscribe(data => {
+        this.calculations = data;
+        console.log(data);
+    })
+  }
+
+  init() {
+    this.http.get<any>('https://egraika-calculator.herokuapp.com/getCalculations').subscribe(data => {
         this.calculations = data;
         console.log(data);
     })
